@@ -1,26 +1,54 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home.jsx';
-import About from './pages/About.jsx';
-import TurfList from './pages/TurfList.jsx';
-import Navbar from './components/Navbar.jsx';
-import Footer from './components/Footer.jsx';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import TurfList from "./pages/TurfList";
+import Login from "./pages/Login";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
 
-export default function App() {
+function App() {
+  const { user } = useAuth();
+
   return (
-    <div className="flex flex-col min-h-screen bg-black">
-      <Navbar />
-      
-      {/* Content wrapper with flex-grow to push footer down */}
-      <div className="flex-grow pt-20">
+    <div className="flex flex-col min-h-screen">
+      {user && <Navbar />}
+      <div className="flex-grow">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/turfs" element={<TurfList />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/turfs"
+            element={
+              <ProtectedRoute>
+                <TurfList />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
-
-      <Footer />
+      {user && <Footer />}
     </div>
   );
 }
+
+export default App;

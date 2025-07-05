@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { GoogleAuth } from './AuthButton';
 
 export default function Navbar() {
   const location = useLocation();
@@ -33,6 +34,8 @@ export default function Navbar() {
         >
           About
         </Link>
+
+        <GoogleAuth />
       </div>
     </nav>
   );

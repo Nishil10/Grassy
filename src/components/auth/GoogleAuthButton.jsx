@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const GoogleAuth = () => {
+export const GoogleAuthButton = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);

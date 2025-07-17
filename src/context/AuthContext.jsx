@@ -1,28 +1,61 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { onAuthStateChange, getUserProfile } from '../services/firebase';
 
-const AuthContext = createContext();
+const AuthContext = createContext({});
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within AuthProvider");
+    }
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+    return context;
+};
 
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+    useEffect(() => {
+        const unsubscribe = onAuthStateChange(async (user) => {
+            try {
+                if (user) {
+                    setUser(user);
+
+                    const profile = await getUserProfile(user.uid);
+                    setUserProfile(profile);
+                } else {
+                    setUser(null);
+                    setUserProfile(null);
+                }
+            } catch (err) {
+                console.log("Error in changing auth state: ", err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        });
+    }, []);
+
+    const value = {
+        user,
+        userProfile,
+        loading,
+        error,
+        isAuthenticated: !!user,
+        refreshProfile: async () => {
+            if (user) {
+                const profile = await getUserProfile(user.uid);
+                setUserProfile(profile);
+            }
+        }
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
+};

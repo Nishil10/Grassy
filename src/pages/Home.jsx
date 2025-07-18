@@ -28,7 +28,7 @@ function Home() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          Feel the Turf.
+          Feel the Turf.  
           <br />
           Play under the Lights.
         </motion.h1>

@@ -15,7 +15,8 @@ function App() {
 
   return (
     <div className="bg-black min-h-screen text-white">
-      {location.pathname !== "/login" && <Navbar />}
+      {location.pathname !== "/login" && location.pathname !== "/register" && <Navbar />}
+
 
       <Routes>
         <Route path="/" element={<Home />} />
